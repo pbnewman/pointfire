@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+weapon_name = "AR-15"
+weapon_id = "ar15"
+slot = "primary"
+damage = 32.0
+headshot_multiplier = 2.5
+limb_multiplier = 0.75
+damage_falloff_start = 25.0
+damage_falloff_end = 60.0
+min_damage_multiplier = 0.6
+fire_rate = 0.09
+is_automatic = true
+magazine_size = 30
+reserve_ammo = 90
+reload_time = 2.2
+hipfire_spread = 3.5
+ads_spread = 0.4
+movement_spread_penalty = 2.0
+crouch_spread_bonus = 0.6
+recoil_vertical = 1.8
+recoil_horizontal_range = 0.6
+recoil_recovery_speed = 12.0
+ads_recoil_multiplier = 0.65
+ads_time = 0.22
+ads_fov_multiplier = 0.75
+weapon_weight = 1.0
+swap_in_time = 0.5
+swap_out_time = 0.3

@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://muzzle_flash"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flash"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.8, 0.3, 1)
+emission_enabled = true
+emission = Color(1, 0.7, 0.2, 1)
+emission_energy_multiplier = 3.0
+billboard_mode = 3
+
+[sub_resource type="QuadMesh" id="QuadMesh_flash"]
+material = SubResource("StandardMaterial3D_flash")
+size = Vector2(0.3, 0.3)
+
+[node name="MuzzleFlash" type="Node3D"]
+
+[node name="Flash" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_flash")
+
+[node name="Light" type="OmniLight3D" parent="."]
+light_color = Color(1, 0.7, 0.3, 1)
+light_energy = 2.0
+omni_range = 3.0
+omni_attenuation = 2.0
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.05
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="queue_free"]
