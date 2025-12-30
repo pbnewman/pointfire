@@ -9,6 +9,14 @@ class_name HUD
 @onready var hit_marker: Control = $HitMarker
 @onready var reload_indicator: Label = $ReloadIndicator
 
+# Health/Armor UI
+@onready var health_bar: ProgressBar = $HealthContainer/HealthBar
+@onready var health_label: Label = $HealthContainer/HealthLabel
+@onready var armor_bar: ProgressBar = $HealthContainer/ArmorBar
+@onready var armor_label: Label = $HealthContainer/ArmorLabel
+@onready var damage_overlay: ColorRect = $DamageOverlay
+@onready var death_screen: Control = $DeathScreen
+
 # Crosshair lines
 @onready var crosshair_top: ColorRect = $Crosshair/Top
 @onready var crosshair_bottom: ColorRect = $Crosshair/Bottom
@@ -32,8 +40,11 @@ class_name HUD
 # State
 var _current_spread: float = 0.0
 var _hit_marker_timer: float = 0.0
+var _damage_overlay_timer: float = 0.0
 var _player: Node = null
 var _weapon_component: WeaponComponent = null
+var _health_component: HealthComponent = null
+var _armor_component: ArmorComponent = null
 
 
 func _ready() -> void:
@@ -47,11 +58,16 @@ func _ready() -> void:
 		hit_marker.visible = false
 	if reload_indicator:
 		reload_indicator.visible = false
+	if damage_overlay:
+		damage_overlay.visible = false
+	if death_screen:
+		death_screen.visible = false
 
 
 func _process(delta: float) -> void:
 	_update_crosshair_spread(delta)
 	_update_hit_marker(delta)
+	_update_damage_overlay(delta)
 
 
 func _find_player() -> void:
@@ -68,6 +84,7 @@ func _find_player() -> void:
 		_player = get_node_or_null("/root/TestArena/Player")
 
 	if _player:
+		# Connect weapon component
 		_weapon_component = _player.get_node_or_null("WeaponComponent")
 		if _weapon_component:
 			_weapon_component.ammo_changed.connect(_on_ammo_changed)
@@ -80,6 +97,22 @@ func _find_player() -> void:
 			if _weapon_component.current_weapon:
 				_on_weapon_equipped(_weapon_component.current_weapon)
 				_on_ammo_changed(_weapon_component.current_ammo, _weapon_component.reserve_ammo)
+
+		# Connect health component
+		_health_component = _player.get_node_or_null("HealthComponent")
+		if _health_component:
+			_health_component.health_changed.connect(_on_health_changed)
+			_health_component.damage_taken.connect(_on_player_damage_taken)
+			_health_component.died.connect(_on_player_died)
+			# Initial update
+			_on_health_changed(_health_component.current_health, _health_component.max_health)
+
+		# Connect armor component
+		_armor_component = _player.get_node_or_null("ArmorComponent")
+		if _armor_component:
+			_armor_component.armor_changed.connect(_on_armor_changed)
+			# Initial update
+			_on_armor_changed(_armor_component.current_armor, _armor_component.max_armor)
 
 
 func _update_crosshair_style() -> void:
@@ -166,3 +199,49 @@ func _on_reload_started() -> void:
 func _on_reload_finished() -> void:
 	if reload_indicator:
 		reload_indicator.visible = false
+
+
+func _on_health_changed(current: float, max_health: float) -> void:
+	if health_bar:
+		health_bar.max_value = max_health
+		health_bar.value = current
+	if health_label:
+		health_label.text = str(int(current))
+
+
+func _on_armor_changed(current: float, max_armor: float) -> void:
+	if armor_bar:
+		armor_bar.max_value = max_armor
+		armor_bar.value = current
+	if armor_label:
+		armor_label.text = str(int(current))
+
+
+func _on_player_damage_taken(amount: float, _attacker: Node, _hit_location: String) -> void:
+	# Show damage overlay
+	if damage_overlay:
+		damage_overlay.visible = true
+		damage_overlay.modulate.a = clamp(amount / 50.0, 0.2, 0.6)
+		_damage_overlay_timer = 0.3
+
+
+func _on_player_died(_killer: Node) -> void:
+	# Show death screen
+	if death_screen:
+		death_screen.visible = true
+	if crosshair:
+		crosshair.visible = false
+
+	# Hide death screen after respawn delay
+	await get_tree().create_timer(2.8).timeout
+	if death_screen:
+		death_screen.visible = false
+	if crosshair:
+		crosshair.visible = true
+
+
+func _update_damage_overlay(delta: float) -> void:
+	if _damage_overlay_timer > 0:
+		_damage_overlay_timer -= delta
+		if _damage_overlay_timer <= 0 and damage_overlay:
+			damage_overlay.visible = false

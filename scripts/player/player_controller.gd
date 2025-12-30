@@ -6,6 +6,8 @@ class_name PlayerController
 @onready var camera: Camera3D = $Camera3D
 @onready var movement: MovementComponent = $MovementComponent
 @onready var weapon: WeaponComponent = $WeaponComponent
+@onready var health: HealthComponent = $HealthComponent
+@onready var armor: ArmorComponent = $ArmorComponent
 
 # Camera settings
 @export_group("Camera")
@@ -23,6 +25,9 @@ var _target_camera_height: float = 1.6
 var _stand_height: float = 2.0
 var _crouch_height: float = 1.2
 
+# Death state
+var is_dead: bool = false
+
 
 func _ready() -> void:
 	# Capture mouse
@@ -33,8 +38,16 @@ func _ready() -> void:
 	if camera:
 		camera.position.y = camera_height_stand
 
+	# Connect health signals
+	if health:
+		health.died.connect(_on_died)
+		health.damage_taken.connect(_on_damage_taken)
+
 
 func _input(event: InputEvent) -> void:
+	if is_dead:
+		return
+
 	# Handle mouse look
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		_handle_mouse_look(event.relative)
@@ -48,6 +61,9 @@ func _input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if is_dead:
+		return
+
 	_handle_movement_input(delta)
 	_handle_weapon_input()
 	_update_camera_height(delta)
@@ -149,3 +165,44 @@ func _set_collision_height(height: float) -> void:
 func _update_camera_height(delta: float) -> void:
 	if camera:
 		camera.position.y = lerp(camera.position.y, _target_camera_height, camera_smooth_speed * delta)
+
+
+## Called when player dies
+func _on_died(killer: Node) -> void:
+	is_dead = true
+	velocity = Vector3.ZERO
+
+	# Tilt camera for death effect
+	if camera:
+		var tween: Tween = create_tween()
+		tween.tween_property(camera, "rotation:z", deg_to_rad(45), 0.5)
+		tween.parallel().tween_property(camera, "position:y", 0.3, 0.5)
+
+	# Respawn after delay (temporary - will be replaced by game manager)
+	await get_tree().create_timer(3.0).timeout
+	respawn()
+
+
+## Called when player takes damage
+func _on_damage_taken(amount: float, attacker: Node, hit_location: String) -> void:
+	# Screen shake or damage effect could go here
+	pass
+
+
+## Respawn the player (temporary implementation)
+func respawn() -> void:
+	is_dead = false
+
+	# Reset components
+	if health:
+		health.reset()
+	if armor:
+		armor.reset()
+
+	# Reset camera
+	if camera:
+		camera.rotation.z = 0
+		camera.position.y = camera_height_stand
+
+	# Move to spawn point (temporary - just reset position)
+	global_position = Vector3(-15, 1, -15)

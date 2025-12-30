@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://test_arena"]
+[gd_scene load_steps=7 format=3 uid="uid://test_arena"]
 
 [ext_resource type="PackedScene" uid="uid://player_scene" path="res://scenes/characters/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" uid="uid://hud_scene" path="res://scenes/ui/hud.tscn" id="2_hud"]
+[ext_resource type="PackedScene" uid="uid://target_dummy" path="res://scenes/characters/target_dummy.tscn" id="3_dummy"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.2, 0.2, 0.22, 1)
@@ -119,3 +120,20 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 1, 18)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1, -15)
 
 [node name="HUD" parent="." instance=ExtResource("2_hud")]
+
+[node name="Targets" type="Node3D" parent="."]
+
+[node name="TargetDummy1" parent="Targets" instance=ExtResource("3_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+
+[node name="TargetDummy2" parent="Targets" instance=ExtResource("3_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -5)
+
+[node name="TargetDummy3" parent="Targets" instance=ExtResource("3_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, -5)
+
+[node name="TargetDummy4" parent="Targets" instance=ExtResource("3_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 0)
+
+[node name="TargetDummy5" parent="Targets" instance=ExtResource("3_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 5)

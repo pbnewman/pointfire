@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://player_scene"]
+[gd_scene load_steps=8 format=3 uid="uid://player_scene"]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_controller"]
 [ext_resource type="Script" path="res://scripts/components/movement_component.gd" id="2_movement"]
 [ext_resource type="Script" path="res://scripts/components/weapon_component.gd" id="3_weapon"]
 [ext_resource type="Resource" uid="uid://ar15_weapon" path="res://resources/weapons/assault_rifle.tres" id="4_ar15"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://scripts/components/armor_component.gd" id="6_armor"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
 radius = 0.4
@@ -36,3 +38,15 @@ weight_speed_penalty = 0.1
 [node name="WeaponComponent" type="Node" parent="."]
 script = ExtResource("3_weapon")
 current_weapon = ExtResource("4_ar15")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+max_health = 100.0
+current_health = 100.0
+
+[node name="ArmorComponent" type="Node" parent="."]
+script = ExtResource("6_armor")
+max_armor = 100.0
+current_armor = 100.0
+damage_reduction = 0.5
+protects_head = false
