@@ -28,8 +28,16 @@ var _crouch_height: float = 1.2
 # Death state
 var is_dead: bool = false
 
+# Original position for round resets
+var _original_position: Vector3
+var _original_rotation_y: float
+
 
 func _ready() -> void:
+	# Store original position for round resets
+	_original_position = global_position
+	_original_rotation_y = rotation.y
+
 	# Capture mouse
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -42,6 +50,30 @@ func _ready() -> void:
 	if health:
 		health.died.connect(_on_died)
 		health.damage_taken.connect(_on_damage_taken)
+
+	# Connect to round manager for respawning on new rounds
+	_connect_to_round_manager()
+
+
+func _connect_to_round_manager() -> void:
+	await get_tree().process_frame
+	var game_controller: Node = get_tree().get_first_node_in_group("game_controller")
+	if game_controller and game_controller.has_node("RoundManager"):
+		var round_manager: RoundManager = game_controller.get_node("RoundManager")
+		round_manager.round_started.connect(_on_round_started)
+
+
+func _on_round_started(_round_number: int) -> void:
+	# Respawn at original position
+	respawn_at(_original_position)
+	rotation.y = _original_rotation_y
+	_camera_rotation.x = _original_rotation_y
+
+	# Reset ammo to full
+	if weapon:
+		weapon.reset_ammo()
+
+	print("[PlayerController] Respawned for round %d" % _round_number)
 
 
 func _input(event: InputEvent) -> void:
@@ -168,7 +200,7 @@ func _update_camera_height(delta: float) -> void:
 
 
 ## Called when player dies
-func _on_died(killer: Node) -> void:
+func _on_died(_killer: Node) -> void:
 	is_dead = true
 	velocity = Vector3.ZERO
 
@@ -178,20 +210,23 @@ func _on_died(killer: Node) -> void:
 		tween.tween_property(camera, "rotation:z", deg_to_rad(45), 0.5)
 		tween.parallel().tween_property(camera, "position:y", 0.3, 0.5)
 
-	# Respawn after delay (temporary - will be replaced by game manager)
-	await get_tree().create_timer(3.0).timeout
-	respawn()
+	# Note: Respawning is now handled by SpawnManager/RoundManager
 
 
 ## Called when player takes damage
-func _on_damage_taken(amount: float, attacker: Node, hit_location: String) -> void:
+func _on_damage_taken(_amount: float, _attacker: Node, _hit_location: String) -> void:
 	# Screen shake or damage effect could go here
 	pass
 
 
-## Respawn the player (temporary implementation)
-func respawn() -> void:
+## Respawn the player at a specific position
+func respawn_at(spawn_pos: Vector3) -> void:
 	is_dead = false
+
+	# Reset velocity
+	velocity = Vector3.ZERO
+	if movement:
+		movement.velocity = Vector3.ZERO
 
 	# Reset components
 	if health:
@@ -199,10 +234,21 @@ func respawn() -> void:
 	if armor:
 		armor.reset()
 
-	# Reset camera
+	# Reset camera (undo death animation)
 	if camera:
 		camera.rotation.z = 0
 		camera.position.y = camera_height_stand
+	_target_camera_height = camera_height_stand
 
-	# Move to spawn point (temporary - just reset position)
-	global_position = Vector3(-15, 1, -15)
+	# Ensure mouse is captured
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+	# Move to spawn position
+	global_position = spawn_pos
+
+	print("[PlayerController] Respawned at %s" % spawn_pos)
+
+
+## Respawn the player at default position (legacy)
+func respawn() -> void:
+	respawn_at(Vector3(-15, 1, -15))

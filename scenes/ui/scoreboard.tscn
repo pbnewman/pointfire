@@ -1,0 +1,107 @@
+[gd_scene load_steps=3 format=3 uid="uid://scoreboard"]
+
+[ext_resource type="Script" path="res://scripts/ui/scoreboard.gd" id="1_scoreboard"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.12, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="Scoreboard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_scoreboard")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="RoundLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "Round 1"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 48
+text = "0 - 0"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
+
+[node name="TeamsContainer" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="TeamAPanel" type="VBoxContainer" parent="Panel/VBox/TeamsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TeamAHeader" type="Label" parent="Panel/VBox/TeamsContainer/TeamAPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.6, 0.9, 1)
+theme_override_font_sizes/font_size = 20
+text = "TEAM A - 0"
+horizontal_alignment = 1
+
+[node name="TeamAPlayers" type="VBoxContainer" parent="Panel/VBox/TeamsContainer/TeamAPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="VSeparator" type="VSeparator" parent="Panel/VBox/TeamsContainer"]
+layout_mode = 2
+
+[node name="TeamBPanel" type="VBoxContainer" parent="Panel/VBox/TeamsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TeamBHeader" type="Label" parent="Panel/VBox/TeamsContainer/TeamBPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 20
+text = "TEAM B - 0"
+horizontal_alignment = 1
+
+[node name="TeamBPlayers" type="VBoxContainer" parent="Panel/VBox/TeamsContainer/TeamBPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="Footer" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "First to 5 rounds wins"
+horizontal_alignment = 1

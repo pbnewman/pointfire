@@ -433,3 +433,12 @@ func get_ads_progress() -> float:
 ## Check if weapon is ready to fire
 func can_shoot() -> bool:
 	return can_fire and not is_reloading and current_ammo > 0
+
+
+## Reset ammo to full (for round resets)
+func reset_ammo() -> void:
+	if current_weapon:
+		current_ammo = current_weapon.magazine_size
+		reserve_ammo = current_weapon.reserve_ammo
+		is_reloading = false
+		ammo_changed.emit(current_ammo, reserve_ammo)
