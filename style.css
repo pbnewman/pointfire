@@ -1,0 +1,175 @@
+/* Pointfire Games — holding page
+   Layout: full-screen splash canvas → centered single column of copy + form.
+   Single, deliberate dark theme: the brand is monochrome silver on near-black. */
+:root {
+  color-scheme: dark;
+  --bg: #121212;          /* page ground, matches the splash art's black */
+  --bg-raised: #1c1c1c;   /* brand-sheet grey used behind the icon */
+  --fg: #ececec;          /* silver text */
+  --fg-muted: #9a9a9a;
+  --line: #3a3a3a;
+  --accent: #ffffff;      /* the only "colour": phosphor white */
+  --accent-glow: rgba(255, 255, 255, .35);
+
+  --font-display: "Chakra Petch", "Arial Black", Impact, sans-serif;
+  --font-pixel: "Press Start 2P", "Courier New", monospace;
+  --font-body: "VT323", "Courier New", monospace;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 22px;
+  line-height: 1.35;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Splash ---------- */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: #000;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.splash:focus-visible { box-shadow: inset 0 0 0 3px var(--accent); }
+.splash__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.splash__src { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.splash__hint {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: calc(6vh + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: clamp(10px, 1.4vw, 13px);
+  letter-spacing: .12em;
+  color: var(--fg);
+  text-shadow: 0 0 8px var(--accent-glow);
+  pointer-events: none;
+  opacity: 0;
+  animation: hint-in .8s ease 1.2s forwards;
+}
+.blink { animation: blink 1s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+@keyframes hint-in { to { opacity: .9; } }
+.splash.is-busy .splash__hint { display: none; }
+
+/* ---------- Content ---------- */
+.content {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding-block: 10vh calc(6vh + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  position: relative;
+  isolation: isolate;
+}
+/* CRT scanlines + vignette over the whole content screen */
+.content::before {
+  content: "";
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.28) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.65) 100%);
+}
+.content__inner {
+  width: 100%;
+  max-width: 34rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.1rem;
+  min-width: 0;
+}
+.content__icon {
+  width: 96px; height: auto; max-width: 100%;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 14px var(--accent-glow));
+}
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.9rem, 6vw, 2.9rem);
+  line-height: 1.05;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--accent);
+  text-shadow: 0 0 18px var(--accent-glow);
+}
+.lede {
+  margin: 0;
+  max-width: 30rem;
+  color: var(--fg);
+}
+
+/* ---------- Form ---------- */
+.signup { width: 100%; max-width: 28rem; display: flex; flex-direction: column; gap: .6rem; margin-top: .4rem; }
+.signup__row { display: flex; gap: .5rem; flex-wrap: wrap; }
+.signup input[type="email"] {
+  flex: 1 1 14rem;
+  min-width: 0;
+  font: inherit;
+  font-size: 1.1em;
+  padding: .55em .8em;
+  color: var(--fg);
+  background: var(--bg-raised);
+  border: 2px solid var(--line);
+  border-radius: 0;
+}
+.signup input[type="email"]::placeholder { color: var(--fg-muted); }
+.signup input[type="email"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.signup button {
+  flex: 0 0 auto;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 1em 1.2em;
+  color: var(--bg);
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 0;
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .15s ease;
+}
+.signup button:hover { box-shadow: 0 0 16px var(--accent-glow); }
+.signup button:active { transform: translateY(2px); }
+.signup button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.signup button[disabled] { opacity: .6; cursor: progress; }
+.signup__status { margin: 0; min-height: 1.4em; color: var(--accent); }
+.signup__status.is-error { color: #ffb3b3; }
+.signup__fine { margin: 0; font-size: .8em; color: var(--fg-muted); }
+.signup.is-done .signup__row, .signup.is-done .signup__fine { display: none; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.footer { margin: 1.5rem 0 0; font-family: var(--font-pixel); font-size: 10px; letter-spacing: .1em; color: var(--fg-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .blink { animation: none; }
+  .splash__hint { animation: none; opacity: .9; }
+}

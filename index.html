@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pointfire Games</title>
+  <meta name="description" content="Pointfire Games is working on its first game. Sign up to hear about the announcement.">
+  <meta name="theme-color" content="#121212">
+  <meta property="og:title" content="Pointfire Games">
+  <meta property="og:description" content="Our first game is in development. Announcement coming soon.">
+  <meta property="og:image" content="assets/splash.jpg">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preload" as="image" href="assets/splash.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@1,700&family=Press+Start+2P&family=VT323&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- BEGIN PAGE -->
+  <!-- Splash: the brand image on a canvas (idle CRT jitter, Game Boy palette wipe on click) -->
+  <div id="splash" class="splash" role="button" tabindex="0" aria-label="Enter the Pointfire Games site">
+    <canvas id="crt" class="splash__canvas" aria-hidden="true"></canvas>
+    <img id="splash-img" class="splash__src" src="assets/splash.jpg" alt="Pointfire Games" decoding="async">
+    <p id="hint" class="splash__hint"><span class="blink">▮</span> CLICK TO START</p>
+  </div>
+
+  <!-- Content revealed by the palette wipe -->
+  <main id="content" class="content" hidden>
+    <div class="content__inner">
+      <img class="content__icon" src="assets/icon.png" alt="" width="96" height="93" decoding="async">
+      <p class="eyebrow">Pointfire Games</p>
+      <h1 class="headline">Our first game is in development.</h1>
+      <p class="lede">
+        We're a small studio building something we can't show you yet.
+        The announcement is coming soon. Leave your email and you'll be the first to know.
+      </p>
+
+      <form id="signup" class="signup" novalidate>
+        <label class="sr-only" for="email">Email address</label>
+        <div class="signup__row">
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email"
+                 placeholder="you@example.com" required>
+          <button id="submit" type="submit">Notify me</button>
+        </div>
+        <!-- Honeypot: bots fill this, humans never see it -->
+        <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p id="status" class="signup__status" role="status" aria-live="polite"></p>
+        <p class="signup__fine">No spam. One email when the game is announced, then occasional updates. Unsubscribe any time.</p>
+      </form>
+
+      <p class="footer">© <span id="year"></span> Pointfire Games</p>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+<!-- END PAGE -->
+</body>
+</html>
