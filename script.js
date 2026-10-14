@@ -8,7 +8,7 @@
 // Email signup endpoint. GitHub Pages is static, so a free form service
 // receives the submissions. See README.md for setup (Formspree is the default).
 // Example: "https://formspree.io/f/abcdwxyz"
-const FORM_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+const FORM_ENDPOINT = "https://formspree.io/f/mbgdpdkb";
 
 // Four-shade transition palette, darkest → lightest. Default is an
 // "overheated CRT" ramp: violet-black → crimson → hot orange → yellow-white.
