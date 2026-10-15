@@ -13,7 +13,9 @@ No build step. Plain HTML, CSS and JavaScript, so it runs on GitHub Pages as-is.
 | `index.html` | Page markup |
 | `style.css` | Styles (dark, monochrome, CRT scanlines) |
 | `script.js` | Canvas CRT effect + signup form. **Edit `FORM_ENDPOINT` here.** |
-| `assets/splash.jpg` | The splash art drawn on the canvas |
+| `assets/splash-bg.jpg` | Logo-free background plate, cropped to cover any screen shape |
+| `assets/logo.png` | The logo on a transparent layer, drawn on top of the plate |
+| `assets/splash.jpg` | Original splash art, used only for the social-share preview image |
 | `assets/icon.png` | Keyed-out arrow icon used on the content screen |
 | `assets/favicon.png`, `assets/apple-touch-icon.png` | Tab / home-screen icons |
 | `assets/brand-sheet.jpg` | Reference only, not used by the page |
@@ -60,8 +62,9 @@ A hidden `_gotcha` honeypot field is included; Formspree drops any submission wh
 
 - **Copy**: edit the headline, paragraph and fine print in `index.html`.
 - **Transition palette and speed**: `GB_PALETTE` and `GB_STEP_MS` at the top of `script.js`. The default is a violet → crimson → orange → yellow heat ramp; the classic Game Boy green and a grey set are included as alternatives.
-- **Splash art**: replace `assets/splash.jpg` (any size; the page letterboxes it so the centre
-  52% of the width, where the logo sits, always stays on screen).
+- **Splash art**: the page draws `assets/splash-bg.jpg` to cover the screen and `assets/logo.png`
+  centred on top, scaled to fit within 90% of the width and 70% of the height. Replace either file
+  to change the look; the plate can be any size, the logo any transparent PNG.
 - **Reduced motion**: visitors with "reduce motion" enabled skip the effect and get a simple fade.
 
 ## Test locally

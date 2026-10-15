@@ -1,5 +1,5 @@
 /* Pointfire Games holding page
-   1. Draw the splash art onto a full-screen canvas.
+   1. Draw the splash art (background plate + logo layer) onto a full-screen canvas.
    2. On click/tap/key: Game Boy palette wipe — four shades down to black, four back up.
    3. Reveal the "first game coming soon" copy and the email signup.
 */
@@ -24,7 +24,6 @@ const GB_STEP_MS = 110;   // time per palette step
 
   const splash  = document.getElementById("splash");
   const canvas  = document.getElementById("crt");
-  const img     = document.getElementById("splash-img");
   const content = document.getElementById("content");
   const ctx     = canvas.getContext("2d", { alpha: false });
 
@@ -37,7 +36,13 @@ const GB_STEP_MS = 110;   // time per palette step
   let W = 0, H = 0, DPR = 1;
   let started = false;
 
-  /* ---------- Composition: fit the art to any viewport ---------- */
+  /* ---------- Composition: fit the art to any viewport ----------
+     Two layers: a logo-free background plate that covers the screen in any
+     orientation, and the logo on a transparent layer drawn on top. The plate
+     can be cropped freely, so no edge of the art is ever visible. */
+  const plate = document.getElementById("splash-bg");
+  const logo  = document.getElementById("splash-logo");
+
   function composeFrame() {
     DPR = Math.min(window.devicePixelRatio || 1, 2);
     W = Math.max(1, Math.floor(window.innerWidth));
@@ -47,38 +52,26 @@ const GB_STEP_MS = 110;   // time per palette step
     canvas.style.width = W + "px";
     canvas.style.height = H + "px";
 
-    const iw = img.naturalWidth || 2000, ih = img.naturalHeight || 1116;
     fctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     fctx.imageSmoothingEnabled = true;
     fctx.fillStyle = "#0e0e0e";
     fctx.fillRect(0, 0, W, H);
 
-    // Backdrop: the art scaled to cover, blurred (downscale → upscale, which
-    // every browser supports) and darkened, so no edge ever shows bare.
-    const cover = Math.max(W / iw, H / ih);
-    const tiny = document.createElement("canvas");
-    tiny.width = 8; tiny.height = Math.max(1, Math.round(8 * H / W));
-    const tctx = tiny.getContext("2d");
-    const ts = Math.max(tiny.width / iw, tiny.height / ih);
-    tctx.drawImage(img, (tiny.width - iw * ts) / 2, (tiny.height - ih * ts) / 2, iw * ts, ts * ih);
-    fctx.save();
-    fctx.globalAlpha = 0.3;
-    fctx.imageSmoothingQuality = "high";
-    fctx.drawImage(tiny, 0, 0, W, H);
-    fctx.restore();
+    // Background plate: cover the viewport, centred.
+    const pw = plate.naturalWidth || 2000, ph = plate.naturalHeight || 1116;
+    const cover = Math.max(W / pw, H / ph);
+    fctx.drawImage(plate, (W - pw * cover) / 2, (H - ph * cover) / 2, pw * cover, ph * cover);
 
-    // Foreground: cover, but never so large that the logo (middle ~52% of the
-    // art) is cropped on a narrow screen.
-    const logoFrac = 0.52;
-    const maxForLogo = (W * 0.9) / (iw * logoFrac);
-    const scale = Math.min(cover, maxForLogo);
-    const dw = iw * scale, dh = ih * scale;
-    fctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    // Logo: same scale as the plate on wide screens, but never wider than 90%
+    // of the viewport or taller than 70% of it, so phones keep the whole mark.
+    const lw = logo.naturalWidth || 990, lh = logo.naturalHeight || 700;
+    const s = Math.min(cover, (W * 0.9) / lw, (H * 0.7) / lh);
+    fctx.drawImage(logo, (W - lw * s) / 2, (H - lh * s) / 2, lw * s, lh * s);
 
-    // Soft vignette so the fitted art blends into the backdrop.
+    // Soft vignette toward the edges.
     const g = fctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.max(W, H) * 0.75);
     g.addColorStop(0, "rgba(0,0,0,0)");
-    g.addColorStop(1, "rgba(0,0,0,0.6)");
+    g.addColorStop(1, "rgba(0,0,0,0.5)");
     fctx.fillStyle = g;
     fctx.fillRect(0, 0, W, H);
 
@@ -202,8 +195,15 @@ const GB_STEP_MS = 110;   // time per palette step
     document.body.style.overflow = "hidden";
     idleRAF = requestAnimationFrame(idleLoop);
   }
-  if (img.complete && img.naturalWidth) ready(); else img.addEventListener("load", ready, { once: true });
-  img.addEventListener("error", reveal, { once: true }); // never trap the visitor if the art fails
+  // Start once both layers have loaded; never trap the visitor if either fails.
+  let pending = 0;
+  [plate, logo].forEach(function (el) {
+    if (el.complete && el.naturalWidth) return;
+    pending++;
+    el.addEventListener("load", function () { if (--pending === 0) ready(); }, { once: true });
+    el.addEventListener("error", reveal, { once: true });
+  });
+  if (pending === 0) ready();
 
   let resizeT = 0;
   window.addEventListener("resize", function () {

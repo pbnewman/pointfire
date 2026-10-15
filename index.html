@@ -11,7 +11,8 @@
   <meta property="og:image" content="assets/splash.jpg">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="preload" as="image" href="assets/splash.jpg">
+  <link rel="preload" as="image" href="assets/splash-bg.jpg">
+  <link rel="preload" as="image" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@1,700&family=Press+Start+2P&family=VT323&display=swap">
@@ -22,7 +23,8 @@
   <!-- Splash: the brand image on a canvas (idle CRT jitter, Game Boy palette wipe on click) -->
   <div id="splash" class="splash" role="button" tabindex="0" aria-label="Enter the Pointfire Games site">
     <canvas id="crt" class="splash__canvas" aria-hidden="true"></canvas>
-    <img id="splash-img" class="splash__src" src="assets/splash.jpg" alt="Pointfire Games" decoding="async">
+    <img id="splash-bg" class="splash__src" src="assets/splash-bg.jpg" alt="" decoding="async">
+    <img id="splash-logo" class="splash__src" src="assets/logo.png" alt="Pointfire Games" decoding="async">
     <p id="hint" class="splash__hint"><span class="blink">▮</span> CLICK TO START</p>
   </div>
 
